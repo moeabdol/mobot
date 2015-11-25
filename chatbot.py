@@ -1,3 +1,5 @@
+#!/usr/local/bin/python2
+
 import aiml
 import utils
 import time
@@ -21,15 +23,9 @@ if connected:
             message = event["text"]
             user_id = event["user"]
             username = utils.get_username(sc, user_id)
-            # print user_id, username, message
-            # sc.api_call("chat.postMessage", as_user="true:", channel=channel_id,
-            #             text=kernel.respond("@" + username+ " " + message))
-            # sc.rtm_send_message(channel_id, "@" + username + message)
-            sc.rtm_send_message(channel_id, "@" + username + " " +
+            sc.rtm_send_message(channel_id, "@" + username + ": " +
                                 kernel.respond(message))
 
     time.sleep(1)
-  # while True:
-  #   print kernel.respond(raw_input(">> "))
 else:
   print "Connection to Slack RTM API Failed"
