@@ -1,3 +1,4 @@
+import re
 import json
 from slackclient import SlackClient
 
@@ -28,8 +29,24 @@ def get_username(sc, user_id):
   json = jasonify(sc.api_call("users.info", user=user_id))
   return json["user"]["name"]
 
+def is_message_to_chatbot(kernel, message):
+  botname = kernel.getBotPredicate("name")
+  match = re.search(botname, message)
+  if match is not None:
+    return True
+  return False
+
+def drop_botname_from_message(kernel, message):
+  new_message = ""
+  botname = kernel.getBotPredicate("name")
+  for word in message.split():
+    match = re.search(botname, word)
+    if match is None:
+      new_message += word + " "
+  return new_message
+
 def configure_chatbot(kernel):
-  kernel.setBotPredicate("name", "spybot")
+  kernel.setBotPredicate("name", "mobot")
   kernel.setBotPredicate("age", "25")
   kernel.setBotPredicate("arch", "OS X")
   kernel.setBotPredicate("birthday", "Nov. 23, 1995")
