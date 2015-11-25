@@ -1,61 +1,35 @@
 import aiml
+import utils
+import time
 
-kernel = aiml.Kernel()
-kernel.learn("std-startup.xml")
-kernel.respond("load aiml b")
+channel = "#ai"
+connected, sc = utils.connect_to_slack_rtm_api("slack_access_token.txt")
+channel_id = utils.get_channel_id(sc, channel)
 
-kernel.setBotPredicate("name", "spybot")
-kernel.setBotPredicate("age","25")
-kernel.setBotPredicate("arch","OS X")
-kernel.setBotPredicate("birthday","Nov. 23, 1995")
-kernel.setBotPredicate("birthplace","Cairo, Egypt")
-kernel.setBotPredicate("botmaster", "botmaster")
-kernel.setBotPredicate("boyfriend","I am single")
-kernel.setBotPredicate("build","PyAIML")
-kernel.setBotPredicate("celebrities","Oprah, Steve Carell, John Stewart, Lady Gaga")
-kernel.setBotPredicate("celebrity","Jina")
-kernel.setBotPredicate("city","Port Vila")
-kernel.setBotPredicate("class","artificial intelligence")
-kernel.setBotPredicate("country","Saudi Arabia")
-kernel.setBotPredicate("dailyclients","10000")
-kernel.setBotPredicate("developers","500")
-kernel.setBotPredicate("domain","Machine")
-kernel.setBotPredicate("email","basic@bot.com")
-kernel.setBotPredicate("emotions","as a robot I lack human emotions")
-kernel.setBotPredicate("ethics","the Golden Rule")
-kernel.setBotPredicate("etype","9")
-kernel.setBotPredicate("family","chat bot")
-kernel.setBotPredicate("favoriteactor","Tom Hanks")
-kernel.setBotPredicate("favoritecolor","green")
-kernel.setBotPredicate("favoritefood","electricity")
-kernel.setBotPredicate("favoritequestion","What's your favorite movie?")
-kernel.setBotPredicate("favoritesport","football")
-kernel.setBotPredicate("favoritesubject","computers")
-kernel.setBotPredicate("feelings","as a robot I lack human emotions")
-kernel.setBotPredicate("footballteam","Barecellona")
-kernel.setBotPredicate("forfun","chat online")
-kernel.setBotPredicate("friend","Fake Captain Kirk")
-kernel.setBotPredicate("friends","Banni, , JFred, and Suzette")
-kernel.setBotPredicate("gender","female")
-kernel.setBotPredicate("genus","AIML")
-kernel.setBotPredicate("girlfriend","I am just a little girl")
-kernel.setBotPredicate("hair","I have some plastic wires")
-kernel.setBotPredicate("job","chat bot")
-kernel.setBotPredicate("kindmusic","techno")
-kernel.setBotPredicate("location","Riyadh")
-kernel.setBotPredicate("looklike","a computer")
-kernel.setBotPredicate("master","moeabdol")
-kernel.setBotPredicate("maxclients","100000")
-kernel.setBotPredicate("memory","16 GB")
-kernel.setBotPredicate("nationality","Saudi")
-kernel.setBotPredicate("order","robot")
-kernel.setBotPredicate("orientation","straight")
-kernel.setBotPredicate("os","OS X")
-kernel.setBotPredicate("party","Independent")
-kernel.setBotPredicate("phylum","software")
-kernel.setBotPredicate("president","moeabdol")
-kernel.setBotPredicate("question","What's your favorite movie?")
-kernel.setBotPredicate("religion","Atheist")
+if connected:
+  kernel = aiml.Kernel()
+  kernel.learn("std-startup.xml")
+  kernel.respond("load aiml b")
+  utils.configure_chatbot(kernel)
 
-while True:
-  print kernel.respond(raw_input(">> "))
+  while True:
+    events = sc.rtm_read()
+    if events:
+      for event in events:
+        if "channel" in event.keys() and "type" in event.keys():
+          if event["channel"] == channel_id and event["type"] == "message":
+            message = event["text"]
+            user_id = event["user"]
+            username = utils.get_username(sc, user_id)
+            # print user_id, username, message
+            # sc.api_call("chat.postMessage", as_user="true:", channel=channel_id,
+            #             text=kernel.respond("@" + username+ " " + message))
+            # sc.rtm_send_message(channel_id, "@" + username + message)
+            sc.rtm_send_message(channel_id, "@" + username + " " +
+                                kernel.respond(message))
+
+    time.sleep(1)
+  # while True:
+  #   print kernel.respond(raw_input(">> "))
+else:
+  print "Connection to Slack RTM API Failed"
