@@ -23,11 +23,14 @@ def connect_to_slack_rtm_api(slack_api_key):
     return True, sc
   return False, None
 
-def get_channel_id(sc, channel_name):
+def get_channels_ids(sc, channels):
+  channel_id_list = []
   json = jasonify(sc.api_call("channels.list"))
-  for channel in json["channels"]:
-    if stringify(channel["name"]) == channel_name[1:]:
-      return stringify(channel["id"])
+  for channel in channels:
+    for ch in json["channels"]:
+      if stringify(ch["name"]) == channel[1:]:
+        channel_id_list.append(ch["id"])
+  return channel_id_list
 
 def get_bot_id(sc, botname):
   json = jasonify(sc.api_call("users.list"))

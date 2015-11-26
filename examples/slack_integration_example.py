@@ -5,12 +5,10 @@ sys.path.append("../")
 import time
 from slackclient import SlackClient
 from utils import get_api_keys
-from utils import get_channel_id
 
-channel = "#general"
+channel = ["#general"]
 api_keys = get_api_keys("api_keys.txt")
 sc = SlackClient(api_keys["slack_api_key"])
-channel_id = get_channel_id(sc, channel)
 
 if sc.rtm_connect():
   while True:
