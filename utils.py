@@ -11,12 +11,6 @@ def get_api_keys(file_path):
       api_keys[key.strip()] = value.strip()[1:-1]
   return api_keys
 
-def stringify(uni):
-  return uni.encode("ascii", "ignore")
-
-def jasonify(string):
-  return json.loads(string)
-
 def connect_to_slack_rtm_api(slack_api_key):
   sc = SlackClient(slack_api_key)
   if sc.rtm_connect():
@@ -38,10 +32,6 @@ def get_bot_id(sc, botname):
     if stringify(member["name"]) == botname:
       return stringify(member["id"])
 
-def get_username(sc, user_id):
-  json = jasonify(sc.api_call("users.info", user=user_id))
-  return json["user"]["name"]
-
 def is_message_to_chatbot(bot_id, message):
   match = re.search(bot_id, message)
   if match is not None:
@@ -55,6 +45,12 @@ def drop_botname_from_message(bot_id, message):
     if match is None:
       new_message += word + " "
   return new_message
+
+def stringify(uni):
+  return uni.encode("ascii", "ignore")
+
+def jasonify(string):
+  return json.loads(string)
 
 def configure_chatbot(kernel):
   kernel.setBotPredicate("name", "mobot")

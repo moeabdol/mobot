@@ -6,7 +6,6 @@ from utils import connect_to_slack_rtm_api
 from utils import get_channels_ids
 from utils import get_bot_id
 from utils import configure_chatbot
-from utils import get_username
 from utils import is_message_to_chatbot
 from utils import drop_botname_from_message
 
