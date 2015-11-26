@@ -4,6 +4,7 @@ import time
 from utils import get_api_keys
 from utils import connect_to_slack_rtm_api
 from utils import get_channel_id
+from utils import get_bot_id
 from utils import configure_chatbot
 from utils import get_username
 from utils import is_message_to_chatbot
@@ -12,7 +13,6 @@ from utils import drop_botname_from_message
 channel = "#ai"
 api_keys = get_api_keys("api_keys.txt")
 connected, sc = connect_to_slack_rtm_api(api_keys["slack_api_key"])
-channel_id = get_channel_id(sc, channel)
 
 if connected:
   kernel = aiml.Kernel()
@@ -20,18 +20,20 @@ if connected:
   kernel.respond("load aiml b")
   configure_chatbot(kernel)
 
+  channel_id = get_channel_id(sc, channel)
+  bot_id = get_bot_id(sc, kernel.getBotPredicate("name"))
+
   while True:
     events = sc.rtm_read()
     if events:
       for event in events:
         try:
           if event["channel"] == channel_id:
-            message = event["text"]
             user_id = event["user"]
-            username = get_username(sc, user_id)
-            if is_message_to_chatbot(kernel, message):
-              message = drop_botname_from_message(kernel, message)
-              sc.rtm_send_message(channel_id, "@" + username + ": " +
+            message = event["text"]
+            if is_message_to_chatbot(bot_id, message):
+              message = drop_botname_from_message(bot_id, message)
+              sc.rtm_send_message(channel_id, "<@" + user_id + ">: " +
                                   kernel.respond(message))
         except:
           pass

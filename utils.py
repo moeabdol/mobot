@@ -1,6 +1,7 @@
 import re
 import json
 from slackclient import SlackClient
+import ipdb
 
 def get_api_keys(file_path):
   api_keys = {}
@@ -28,22 +29,26 @@ def get_channel_id(sc, channel_name):
     if stringify(channel["name"]) == channel_name[1:]:
       return stringify(channel["id"])
 
+def get_bot_id(sc, botname):
+  json = jasonify(sc.api_call("users.list"))
+  for member in json["members"]:
+    if stringify(member["name"]) == botname:
+      return stringify(member["id"])
+
 def get_username(sc, user_id):
   json = jasonify(sc.api_call("users.info", user=user_id))
   return json["user"]["name"]
 
-def is_message_to_chatbot(kernel, message):
-  botname = kernel.getBotPredicate("name")
-  match = re.search(botname, message)
+def is_message_to_chatbot(bot_id, message):
+  match = re.search(bot_id, message)
   if match is not None:
     return True
   return False
 
-def drop_botname_from_message(kernel, message):
+def drop_botname_from_message(bot_id, message):
   new_message = ""
-  botname = kernel.getBotPredicate("name")
   for word in message.split():
-    match = re.search(botname, word)
+    match = re.search(bot_id, word)
     if match is None:
       new_message += word + " "
   return new_message
