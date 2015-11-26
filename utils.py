@@ -2,9 +2,13 @@ import re
 import json
 from slackclient import SlackClient
 
-def read_slack_access_token(file_path):
+def get_api_keys(file_path):
+  api_keys = {}
   with open(file_path) as f:
-    return f.read().replace("\n", "")
+    for line in f:
+      key, value = line.partition("=")[::2]
+      api_keys[key.strip()] = value.strip()[1:-1]
+  return api_keys
 
 def stringify(uni):
   return uni.encode("ascii", "ignore")
@@ -12,9 +16,8 @@ def stringify(uni):
 def jasonify(string):
   return json.loads(string)
 
-def connect_to_slack_rtm_api(access_token_file_path):
-  token = read_slack_access_token(access_token_file_path)
-  sc = SlackClient(token)
+def connect_to_slack_rtm_api(slack_api_key):
+  sc = SlackClient(slack_api_key)
   if sc.rtm_connect():
     return True, sc
   return False, None
@@ -56,8 +59,8 @@ def configure_chatbot(kernel):
   kernel.setBotPredicate("build", "PyAIML")
   kernel.setBotPredicate("celebrities", "Oprah, Steve Carell, John Stewart, Lady Gaga")
   kernel.setBotPredicate("celebrity", "Jina")
-  kernel.setBotPredicate("city", "Port Vila")
-  kernel.setBotPredicate("class", "artificial intelligence")
+  kernel.setBotPredicate("city", "Riyadh")
+  kernel.setBotPredicate("class", "Artificial Intelligence")
   kernel.setBotPredicate("country", "Saudi Arabia")
   kernel.setBotPredicate("dailyclients", "10000")
   kernel.setBotPredicate("developers", "500")

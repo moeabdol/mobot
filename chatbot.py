@@ -1,7 +1,7 @@
 #!/usr/local/bin/python2
-
 import aiml
 import time
+from utils import get_api_keys
 from utils import connect_to_slack_rtm_api
 from utils import get_channel_id
 from utils import configure_chatbot
@@ -10,7 +10,8 @@ from utils import is_message_to_chatbot
 from utils import drop_botname_from_message
 
 channel = "#ai"
-connected, sc = connect_to_slack_rtm_api("slack_access_token.txt")
+api_keys = get_api_keys("api_keys.txt")
+connected, sc = connect_to_slack_rtm_api(api_keys["slack_api_key"])
 channel_id = get_channel_id(sc, channel)
 
 if connected:

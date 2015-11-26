@@ -1,14 +1,15 @@
 #!/usr/local/bin/python2
 import sys
+sys.path.append("./")
 sys.path.append("../")
 import time
 from slackclient import SlackClient
-from utils import read_slack_access_token
+from utils import get_api_keys
 from utils import get_channel_id
 
 channel = "#general"
-token = read_slack_access_token("../slack_access_token.txt")
-sc = SlackClient(token)
+api_keys = get_api_keys("api_keys.txt")
+sc = SlackClient(api_keys["slack_api_key"])
 channel_id = get_channel_id(sc, channel)
 
 if sc.rtm_connect():
