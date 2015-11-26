@@ -1,7 +1,7 @@
 import re
 import json
+import time
 from slackclient import SlackClient
-import ipdb
 
 def get_api_keys(file_path):
   api_keys = {}
@@ -17,17 +17,27 @@ def connect_to_slack_rtm_api(slack_api_key):
     return True, sc
   return False, None
 
+def join_all_channels(sc):
+  json = jsonify(sc.api_call("channels.list"))
+  for channel in json["channels"]:
+    sc.api_call("channels.join", name=channel["name"])
+    print "Joined #" + channel["name"]
+
 def get_channels_ids(sc, channels):
-  channel_id_list = []
-  json = jasonify(sc.api_call("channels.list"))
-  for channel in channels:
-    for ch in json["channels"]:
-      if stringify(ch["name"]) == channel[1:]:
-        channel_id_list.append(ch["id"])
-  return channel_id_list
+  channels_ids_list = []
+  json = jsonify(sc.api_call("channels.list"))
+  if channels == "all":
+    for channel in json["channels"]:
+      channels_ids_list.append(channel["id"])
+  else:
+    for channel in channels:
+      for ch in json["channels"]:
+        if stringify(ch["name"]) == channel[1:]:
+          channels_ids_list.append(ch["id"])
+  return channels_ids_list
 
 def get_bot_id(sc, botname):
-  json = jasonify(sc.api_call("users.list"))
+  json = jsonify(sc.api_call("users.list"))
   for member in json["members"]:
     if stringify(member["name"]) == botname:
       return stringify(member["id"])
@@ -49,7 +59,7 @@ def drop_botname_from_message(bot_id, message):
 def stringify(uni):
   return uni.encode("ascii", "ignore")
 
-def jasonify(string):
+def jsonify(string):
   return json.loads(string)
 
 def configure_chatbot(kernel):

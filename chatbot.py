@@ -3,13 +3,15 @@ import aiml
 import time
 from utils import get_api_keys
 from utils import connect_to_slack_rtm_api
+from utils import join_all_channels
 from utils import get_channels_ids
 from utils import get_bot_id
 from utils import configure_chatbot
 from utils import is_message_to_chatbot
 from utils import drop_botname_from_message
 
-channels = ["#general", "#ai"]
+# channels = ["#general", "#ai"]
+channels = "all"
 api_keys = get_api_keys("api_keys.txt")
 connected, sc = connect_to_slack_rtm_api(api_keys["slack_api_key"])
 
@@ -19,6 +21,7 @@ if connected:
   kernel.respond("load aiml b")
   configure_chatbot(kernel)
 
+  join_all_channels(sc)
   channels_ids = get_channels_ids(sc, channels)
   bot_id = get_bot_id(sc, kernel.getBotPredicate("name"))
 
