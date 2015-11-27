@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 sys.path.append("./")
 sys.path.append("../")
@@ -6,7 +7,7 @@ from slackclient import SlackClient
 from utils import get_api_keys
 
 channel = ["#general"]
-api_keys = get_api_keys("api_keys.txt")
+api_keys = get_api_keys("../api_keys.txt")
 sc = SlackClient(api_keys["slack_api_key"])
 
 if sc.rtm_connect():
