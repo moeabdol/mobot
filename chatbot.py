@@ -1,3 +1,4 @@
+#!/usr/local/bin/python2
 import aiml
 import time
 from utils import get_args
@@ -11,7 +12,6 @@ from utils import is_message_to_chatbot
 from utils import drop_botname_from_message
 
 args = get_args()
-
 channels = args.channel
 
 api_keys = get_api_keys("api_keys.txt")
