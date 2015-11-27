@@ -1,7 +1,14 @@
 import re
 import json
 import time
+from argparse import ArgumentParser
 from slackclient import SlackClient
+
+def get_args():
+  parser = ArgumentParser(description="Mobot is a Slack Python AIML Chatbot")
+  parser.add_argument("-j", "--join", nargs="+", dest="channel", default="all",
+                      help="join list of channels (ex. general random)")
+  return parser.parse_args()
 
 def get_api_keys(file_path):
   api_keys = {}
@@ -17,24 +24,35 @@ def connect_to_slack_rtm_api(slack_api_key):
     return True, sc
   return False, None
 
-def join_all_channels(sc):
-  json = jsonify(sc.api_call("channels.list"))
-  for channel in json["channels"]:
-    sc.api_call("channels.join", name=channel["name"])
-    print "Joined #" + channel["name"]
-
 def get_channels_ids(sc, channels):
-  channels_ids_list = []
-  json = jsonify(sc.api_call("channels.list"))
+  channels_list = jsonify(sc.api_call("channels.list"))["channels"]
   if channels == "all":
-    for channel in json["channels"]:
-      channels_ids_list.append(channel["id"])
+    return get_all_channels(sc, channels_list)
   else:
-    for channel in channels:
-      for ch in json["channels"]:
-        if stringify(ch["name"]) == channel[1:]:
-          channels_ids_list.append(ch["id"])
-  return channels_ids_list
+    return get_channels_given_channels_names(sc, channels, channels_list)
+
+def get_all_channels(sc, channels_list):
+  channels_dict = {}
+  for channel in channels_list:
+    channel_id = stringify(channel["id"])
+    channel_name = stringify(channel["name"])
+    channels_dict[channel_id] = channel_name
+  return channels_dict
+
+def get_channels_given_channels_names(sc, channels, channels_list):
+  channels_dict = {}
+  for channel in channels:
+    for ch in channels_list:
+      if stringify(ch["name"]) == channel:
+        channel_id = stringify(ch["id"])
+        channel_name = stringify(ch["name"])
+        channels_dict[channel_id] = channel_name
+  return channels_dict
+
+def join_channels(sc, channels):
+  for channel_id, channel_name in channels.items():
+    sc.api_call("channels.join", name=channel_id)
+    print "Joined #" + channel_name
 
 def get_bot_id(sc, botname):
   json = jsonify(sc.api_call("users.list"))
