@@ -1,4 +1,3 @@
-#!/usr/local/bin/python2
 import aiml
 import time
 from utils import get_api_keys

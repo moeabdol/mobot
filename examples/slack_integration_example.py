@@ -1,4 +1,3 @@
-#!/usr/local/bin/python2
 import sys
 sys.path.append("./")
 sys.path.append("../")
