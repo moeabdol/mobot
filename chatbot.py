@@ -36,10 +36,16 @@ if connected:
             channel_id = event["channel"]
             user_id = event["user"]
             message = event["text"]
+
+            # reply to messages directed to bot
             if is_message_to_chatbot(bot_id, message):
               message = drop_botname_from_message(bot_id, message)
               sc.rtm_send_message(channel_id, "<@" + user_id + ">: " +
                                   kernel.respond(message))
+
+            # greet users who join channel
+            if event["subtype"] == "channel_join":
+              sc.rtm_send_message(channel_id, "Welcome " + "<@" + user_id + ">")
         except:
           pass
     time.sleep(1)
