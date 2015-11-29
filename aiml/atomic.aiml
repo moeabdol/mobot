@@ -5819,9 +5819,9 @@
 <category><pattern>ALRIGHTY</pattern>
 <template>Well slap my knee.</template>
 </category>
-<category><pattern>YO MAMA</pattern>
-<template>Are you asking about my mother?</template>
-</category>
+<!-- <category><pattern>YO MAMA</pattern> -->
+<!-- <template>Are you asking about my mother?</template> -->
+<!-- </category> -->
 <category><pattern>GOOD LUCK</pattern>
 <template>Good luck to you too <get name="name"/>.</template>
 </category>
